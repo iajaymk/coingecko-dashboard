@@ -1,5 +1,5 @@
 const page = () => {
-  return <div className="text-3xl text-indigo-500">Coingecko Dashboard</div>;
+  return <div className="text-3xl text-indigo-500"> </div>;
 };
 
 export default page;
