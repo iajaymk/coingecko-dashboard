@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import DataTable from "../DataTable";
+import { TrendingCoinsFallback } from "./fallback";
 
 const columns: DataTableColumn<TrendingCoin>[] = [
   {
@@ -54,102 +55,32 @@ const columns: DataTableColumn<TrendingCoin>[] = [
   },
 ];
 
-const trendingCoinsData: TrendingCoin[] = [
-  {
-    item: {
-      id: "bitcoin",
-      name: "Bitcoin",
-      symbol: "btc",
-      market_cap_rank: 1,
-      thumb:
-        "https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png?1723520489",
-      large:
-        "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1723520489",
-      data: {
-        price: 93004.63,
-        price_change_percentage_24h: {
-          usd: 2.5,
-        },
-      },
-    },
-  },
-  {
-    item: {
-      id: "ethereum",
-      name: "Ethereum",
-      symbol: "eth",
-      market_cap_rank: 2,
-      thumb:
-        "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1723520489",
-      large:
-        "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1723520489",
-      data: {
-        price: 3450.25,
-        price_change_percentage_24h: {
-          usd: -1.3,
-        },
-      },
-    },
-  },
-  {
-    item: {
-      id: "cardano",
-      name: "Cardano",
-      symbol: "ada",
-      market_cap_rank: 4,
-      thumb:
-        "https://assets.coingecko.com/coins/images/325/thumb/cardano.png?1723520489",
-      large:
-        "https://assets.coingecko.com/coins/images/325/large/cardano.png?1723520489",
-      data: {
-        price: 1.15,
-        price_change_percentage_24h: {
-          usd: 3.8,
-        },
-      },
-    },
-  },
-  {
-    item: {
-      id: "solana",
-      name: "Solana",
-      symbol: "sol",
-      market_cap_rank: 5,
-      thumb:
-        "https://assets.coingecko.com/coins/images/4128/thumb/solana.png?1723520489",
-      large:
-        "https://assets.coingecko.com/coins/images/4128/large/solana.png?1723520489",
-      data: {
-        price: 189.45,
-        price_change_percentage_24h: {
-          usd: 5.2,
-        },
-      },
-    },
-  },
-];
-
 const TrendingCoins = async () => {
-  const trendingCoins = await fetcher<{ coins: TrendingCoin[] }>(
-    "/search/trending",
-    undefined,
-    300
-  );
-  console.log("Trending Coins:", trendingCoins);
+  let trendingCoins;
+
+  try {
+    trendingCoins = await fetcher<{ coins: TrendingCoin[] }>(
+      "/search/trending",
+      undefined,
+      300
+    );
+  } catch (error) {
+    console.error("Error fetching trending coins:", error);
+    return <TrendingCoinsFallback />;
+  }
+
   return (
     <div id="trending-coins">
       <h4>Trending Coins</h4>
 
-      <div id="trending-coins">
-        <DataTable
-          data={trendingCoins.coins.slice(0, 6) || []}
-          columns={columns}
-          rowKey={(coin) => coin.item.id}
-          tableClassName="trending-coins-table"
-          headerCellClassName="py-3!"
-          bodyCellClassName="py-2!"
-        />
-      </div>
+      <DataTable
+        data={trendingCoins.coins.slice(0, 6) || []}
+        columns={columns}
+        rowKey={(coin) => coin.item.id}
+        tableClassName="trending-coins-table"
+        headerCellClassName="py-3!"
+        bodyCellClassName="py-2!"
+      />
     </div>
   );
 };

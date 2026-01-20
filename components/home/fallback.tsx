@@ -1,4 +1,3 @@
-import DataTable from "@/components/DataTable";
 import {
   Table,
   TableBody,
